@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib as mlp 
+import seaborn as sns #conda install seaborn
 from sklearn import preprocessing
 
 # 1. download conda: https://www.anaconda.com/docs/getting-started/miniconda/install#windows-command-prompt
