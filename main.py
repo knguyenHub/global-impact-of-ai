@@ -15,6 +15,21 @@ from sklearn import preprocessing
 # 6. Select Python Interpreter: Python 3.13.2 ('DataScienceProject)
 # 7. Run file to make sure theres no install issues
 
-dataset = pd.read_csv('Global_AI_Content_Impact_Dataset.csv')
+#initalize dataset 
+GlobalImpact = pd.read_csv('Global_AI_Content_Impact_Dataset.csv')
+GlobalImpact.sort_values(by=['Country', 'Year'], ascending=True, inplace=True)
+print(GlobalImpact.head())
+
+#Data Cleaning
+GlobalImpact.drop_duplicates(inplace=True)
+
+#fill missing numeric values with the mean
+mean = GlobalImpact.mean(numeric_only=True)
+GlobalImpact.fillna(value=mean, inplace=True)
+
+#Data Visualization
+
+
+
 
 
