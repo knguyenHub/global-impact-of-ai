@@ -4,7 +4,7 @@ import matplotlib as mlp
 from sklearn import preprocessing
 
 # 1. download conda: https://www.anaconda.com/docs/getting-started/miniconda/install#windows-command-prompt
-# 2. after download create environment in terminal:
+# 2. after download create environment in VSCode terminal:
 #       conda create -n DataScienceProject 
 #   where DataScienceProject is the name of the environment
 # 3. activate the environment:
@@ -15,5 +15,6 @@ from sklearn import preprocessing
 # 6. Select Python Interpreter: Python 3.13.2 ('DataScienceProject)
 # 7. Run file to make sure theres no install issues
 
+dataset = pd.read_csv('Global_AI_Content_Impact_Dataset.csv')
 
 
