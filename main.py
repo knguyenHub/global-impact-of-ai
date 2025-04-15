@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import matplotlib as mlp 
+import matplotlib.pyplot as plt 
 import seaborn as sns #conda install seaborn
 from sklearn import preprocessing
 
@@ -18,7 +18,7 @@ from sklearn import preprocessing
 
 #initalize dataset 
 GlobalImpact = pd.read_csv('Global_AI_Content_Impact_Dataset.csv')
-GlobalImpact.sort_values(by=['Country', 'Year'], ascending=True, inplace=True)
+GlobalImpact.sort_values(by=['Year', 'Country', 'Industry'], ascending=True, inplace=True)
 print(GlobalImpact.head())
 
 #Data Cleaning
@@ -30,7 +30,50 @@ GlobalImpact.fillna(value=mean, inplace=True)
 
 #Data Visualization
 
+#Top AI Tools
+industryGroups = GlobalImpact.groupby(['Industry', 'Top AI Tools Used']).size().unstack(fill_value=0)
+industries = industryGroups.index
+num_industries = len(industries)
 
+fig, axes = plt.subplots(nrows=2, ncols=5, figsize=(15, 10))  
+axes = axes.flatten()  
 
+for i, industry in enumerate(industries):
+    values = industryGroups.loc[industry]
+    axes[i].pie(values, labels=values.index, textprops={'size': 'smaller'}, radius=1, startangle=90)
+    axes[i].set_title(industry)
 
+plt.tight_layout()
+plt.show()
 
+#Job Loss
+yearGroups = GlobalImpact.groupby(['Country', 'Year'])['Job Loss Due to AI (%)'].mean().unstack()
+countries= yearGroups.index
+fig, axes = plt.subplots(nrows=2, ncols=5, figsize=(15, 7))  
+axes = axes.flatten() 
+
+for i, country in enumerate(countries):
+    values = yearGroups.loc[country]
+    axes[i].bar(values.index, values.values, color='skyblue')
+    axes[i].set_title(f"Job Loss Due to AI in {country}")
+    axes[i].set_ylabel("Job Loss (%)")
+    axes[i].set_xlabel("Year")
+
+plt.tight_layout()
+plt.show()
+
+#Consumer Trust in AI
+ConsumerTrust = GlobalImpact.groupby(['Country', 'Year'])['Consumer Trust in AI (%)'].mean().unstack()
+CTcountries= ConsumerTrust.index
+fig, axes = plt.subplots(nrows=2, ncols=5, figsize=(15, 7))  
+axes = axes.flatten() 
+
+for i, country in enumerate(CTcountries):
+    values = ConsumerTrust.loc[country]
+    axes[i].bar(values.index, values.values, color='skyblue')
+    axes[i].set_title(f"Consumer Trust in AI in {country}")
+    axes[i].set_ylabel("Consumer Trust(%)")
+    axes[i].set_xlabel("Year")
+
+plt.tight_layout()
+plt.show()
