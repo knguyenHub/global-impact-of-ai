@@ -129,3 +129,68 @@ sns.lmplot(
 )
 
 plt.show()
+
+#Grouping Industries
+highCorrelation = ['Education', 'Manufacturing', 'Media', 'Legal']
+correlationDf = GlobalImpact[GlobalImpact['Industry'].isin(highCorrelation)]
+industries = correlationDf['Industry'].unique()
+
+palette = sns.color_palette('Set2', n_colors=len(industries))
+color_mapping = dict(zip(industries, palette))
+
+# Seaborn style
+sns.set(style="whitegrid")
+
+# Create subplots
+n = len(industries)
+
+fig, axes = plt.subplots(1, n, figsize=(5 * n, 5), sharey=True)
+
+if n == 1:
+    axes = [axes]
+
+for ax, industry in zip(axes, industries):
+    subset = correlationDf[correlationDf['Industry'] == industry]
+    
+    X = subset['Human-AI Collaboration Rate (%)'].values.reshape(-1, 1)
+    y = subset['Revenue Increase Due to AI (%)'].values
+
+    # Polynomial features and model
+    poly = PolynomialFeatures(degree=2)
+    X_poly = poly.fit_transform(X)
+    polyModel = LinearRegression()
+    polyModel.fit(X_poly, y)
+
+    # Predict smooth curve
+    x_range = np.linspace(subset['Human-AI Collaboration Rate (%)'].min(), subset['Human-AI Collaboration Rate (%)'].max(), 100).reshape(-1, 1)
+    x_range_poly = poly.transform(x_range)
+    y_range = polyModel.predict(x_range_poly)
+
+    # Get color for this industry
+    color = color_mapping[industry]
+
+    # Scatter plot
+    sns.scatterplot(x=subset['Human-AI Collaboration Rate (%)'], y=subset['Revenue Increase Due to AI (%)'], ax=ax, color=color, s=50)
+    # Polynomial curve
+    ax.plot(x_range.flatten(), y_range, color=color, linewidth=2)
+
+    # Show equation
+    second_degree= polyModel.coef_[2]
+    first_degree = polyModel.coef_[1]
+    intercept = polyModel.coef_[0]
+    equation = f"${second_degree:.2f}x^2 + {first_degree:+.2f}x + {intercept:+.2f}$"
+
+    y_pred = polyModel.predict(X_poly)
+    #Sum of Square Error
+    SSError = sum((y - y_pred) ** 2)
+    print("Sum of Squared Errors (SSE) of " , industry, ":", SSError)
+
+    r = r_regression(X, np.ravel(y))[0]
+    print("Correlation coefficient (r) of " , industry, ":", r)
+    ax.text(0.05, 0.95, equation, transform=ax.transAxes, fontsize=10,
+            verticalalignment='top', bbox=dict(boxstyle="round", facecolor="white", alpha=0.5))
+
+    ax.set_title(industry)
+
+plt.tight_layout()
+plt.show()
